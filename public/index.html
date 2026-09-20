@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Meetly — Seamless Virtual Meetings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<nav class="nav">
+  <div class="logo"><div class="logo-mark">◉</div> Meetly</div>
+  <div class="nav-right">
+    <span class="pill" id="navStatus">● Secure • Encrypted • HD</span>
+    <button class="btn btn-ghost btn-sm" id="btnShareLink" title="Copy invite link">⎘ Copy invite</button>
+  </div>
+</nav>
+
+<div id="app">
+  <!-- LANDING -->
+  <section id="view-landing">
+    <div class="container">
+      <div class="hero">
+        <div>
+          <h1>Meetings that<br/><span>just work.</span></h1>
+          <p>Reliable, feature-rich virtual meetings for teams, classrooms and communities. Create a room in one click, share your screen, chat, react and collaborate — no downloads.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="btnCreate">＋ New meeting</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('joinInput').focus()">Join with code</button>
+          </div>
+          <div class="stats">
+            <div class="stat"><b>HD</b><br><span>1080p video & noise suppression</span></div>
+            <div class="stat"><b>∞</b><br><span>Up to 12 peers • Mesh P2P</span></div>
+            <div class="stat"><b>⚡</b><br><span>&lt; 150ms signaling</span></div>
+          </div>
+        </div>
+
+        <div class="card join-card">
+          <h3>Join a meeting</h3>
+          <div class="join-row">
+            <input id="joinInput" class="input" placeholder="Enter meeting code or link"/>
+            <button class="btn btn-primary" id="btnJoin">Join</button>
+          </div>
+          <input id="landingName" class="input" placeholder="Your name (e.g. Alex)"/>
+          <div style="display:flex;gap:10px">
+            <input id="landingTopic" class="input" placeholder="Meeting topic (optional)"/>
+          </div>
+          <p style="font-size:12px;color:var(--muted)">By joining you agree to be on camera/mic. You can turn them off before entering.</p>
+          <div class="recent">
+            <div class="recent-head"><b style="font-size:13px">Recent</b><button class="btn btn-ghost btn-sm" id="btnClearRecent">Clear</button></div>
+            <div id="recentList" class="recent-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="feat"><div class="icon">🎥</div><h4>Crystal video & audio</h4><p>Adaptive WebRTC with STUN, echo cancellation and auto gain.</p></div>
+        <div class="feat"><div class="icon">🖥️</div><h4>Screen share</h4><p>Present slides, code or your whole desktop in one click.</p></div>
+        <div class="feat"><div class="icon">💬</div><h4>Chat & reactions</h4><p>Keep the flow with emoji reactions, hand raise and chat.</p></div>
+        <div class="feat"><div class="icon">🔒</div><h4>Private by design</h4><p>Ephemeral rooms, no recording saved server-side without consent.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOBBY -->
+  <section id="view-lobby" class="hidden">
+    <div class="lobby">
+      <div class="preview" id="previewBox">
+        <video id="previewVideo" autoplay muted playsinline></video>
+        <div id="previewFallback" style="position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px">Camera off</div>
+        <div class="overlay">
+          <div class="controls-row">
+            <button class="icon-btn" id="lobbyMic" title="Mute">🎙️</button>
+            <button class="icon-btn" id="lobbyCam" title="Camera">📷</button>
+          </div>
+        </div>
+      </div>
+      <div class="card lobby-card">
+        <h2 id="lobbyTitle">Ready to join?</h2>
+        <div class="meta" id="lobbyMeta">Set up your audio and video</div>
+        <input id="lobbyName" class="input" placeholder="Your name"/>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <input id="lobbyRoom" class="input" placeholder="Room code"/>
+          <button class="btn btn-ghost btn-sm" id="btnCopyLobby">Copy link</button>
+        </div>
+        <label class="checkrow"><input type="checkbox" id="chkMic" checked/> Microphone on</label>
+        <label class="checkrow"><input type="checkbox" id="chkCam" checked/> Camera on</label>
+        <div class="lobby-actions">
+          <button class="btn btn-primary" id="btnEnter">Join now</button>
+          <button class="btn btn-ghost" id="btnBack">Back</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px">Tip: Allow camera/mic when prompted. You can change them anytime in the meeting.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOM -->
+  <section id="view-room" class="hidden">
+    <div class="room">
+      <div class="room-top">
+        <div class="room-top-left">
+          <span class="live-dot"></span>
+          <b id="roomTopic">Meeting</b>
+          <span class="pill" id="roomCodePill"></span>
+          <span class="pill" id="roomTimer">00:00</span>
+          <span class="pill" id="roomCount">1 participant</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" id="btnInvite">⎘ Invite</button>
+          <button class="btn btn-ghost btn-sm" id="btnLayout">◧ Layout</button>
+          <button class="btn btn-ghost btn-sm" id="btnToggleSide">☰</button>
+        </div>
+      </div>
+      <div class="room-main">
+        <div class="video-area">
+          <div id="videoGrid" class="video-grid layout-grid"></div>
+          <div class="controls" id="controls">
+            <button class="btn btn-ghost btn-icon" id="cMic" title="Mute">🎙️</button>
+            <button class="btn btn-ghost btn-icon" id="cCam" title="Camera">📷</button>
+            <button class="btn btn-ghost btn-icon" id="cScreen" title="Share screen">🖥️</button>
+            <button class="btn btn-ghost btn-icon" id="cHand" title="Raise hand">✋</button>
+            <button class="btn btn-ghost btn-icon" id="cChat" title="Chat">💬</button>
+            <button class="btn btn-ghost btn-icon" id="cPeople" title="Participants">👥</button>
+            <div class="divider"></div>
+            <button class="btn btn-ghost btn-icon" id="cMore" title="Reactions">😊</button>
+            <button class="btn btn-danger" id="cLeave">✕ Leave</button>
+          </div>
+        </div>
+        <aside class="side" id="sidePanel">
+          <div class="side-tabs">
+            <button class="tab active" data-tab="chat">Chat</button>
+            <button class="tab" data-tab="people">People</button>
+            <button class="tab" data-tab="info">Info</button>
+          </div>
+          <div class="side-body" id="tab-chat">
+            <div id="chatList" class="chat-list"></div>
+          </div>
+          <div class="side-body hidden" id="tab-people">
+            <div id="peopleList"></div>
+          </div>
+          <div class="side-body hidden" id="tab-info">
+            <div class="card" style="padding:14px">
+              <h4 style="margin-bottom:8px">Meeting info</h4>
+              <div style="font-size:13px;color:var(--muted);line-height:1.6">
+                <div><b>Room:</b> <span id="infoRoom"></span></div>
+                <div><b>Topic:</b> <span id="infoTopic"></span></div>
+                <div><b>Host:</b> <span id="infoHost"></span></div>
+                <div style="margin-top:10px"><b>Invite link</b><br><span id="infoLink" style="word-break:break-all;color:var(--text)"></span></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="btnCopyInfo" style="margin-top:10px">Copy link</button>
+            </div>
+            <div class="card" style="padding:14px;margin-top:10px">
+              <h4>Tips</h4>
+              <ul style="font-size:13px;color:var(--muted);margin:8px 0 0 16px;line-height:1.6">
+                <li>Use 🎥 / 🎙️ to toggle devices</li>
+                <li>🖥️ to present your screen</li>
+                <li>✋ to get attention</li>
+                <li>💬 for side chat</li>
+              </ul>
+            </div>
+          </div>
+          <div class="reactions-bar" id="reactionsBar">
+            <button class="react" data-emoji="❤️">❤️</button>
+            <button class="react" data-emoji="👏">👏</button>
+            <button class="react" data-emoji="😂">😂</button>
+            <button class="react" data-emoji="🎉">🎉</button>
+            <button class="react" data-emoji="🔥">🔥</button>
+            <button class="react" data-emoji="👍">👍</button>
+          </div>
+          <div class="chat-input" id="chatInputRow">
+            <input id="chatInput" class="input" placeholder="Send a message… (Enter)"/>
+            <button class="btn btn-primary btn-sm" id="btnSend">Send</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
