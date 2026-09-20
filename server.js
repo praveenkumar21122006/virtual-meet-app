@@ -190,6 +190,10 @@ function handleLeave(socket) {
   console.log(`[leave] ${name} left ${roomId} (${room.participants.size} remaining)`);
 }
 
-server.listen(PORT, () => {
-  console.log(`✓ Meeting App running at http://localhost:${PORT}`);
-});
+if (require.main === module && !process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`✓ Meeting App running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = server;
